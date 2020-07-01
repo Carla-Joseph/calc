@@ -1,8 +1,8 @@
 import React from 'react'
-import HelloWorld from '../components/HelloWorld'
+import Calculator from '../components/Calculator'
 
 function HomePage() {
-  return <HelloWorld />
+  return <Calculator />
 }
 
 export default HomePage
