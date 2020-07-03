@@ -1,26 +1,58 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 export function Calculator() {
   const [currentDisplay, setCurrentDisplay] = useState(0)
-  const [leftOperand, setLeftOperand] = useState()
+  const [firstOperand, setFirstOperand] = useState()
   const [operator, setOperator] = useState()
-  const [rightOperand, setRightOperand] = useState()
+  const [secondOperand, setSecondOperand] = useState()
+
+  const handleKeyUp = event => {
+    console.log(event.code)
+    const digit = event.code.split('Digit')[1]
+    const isInteger = Number.isInteger(parseInt(digit))
+
+    if (isInteger) {
+      handleDigitSelected(digit)
+    } else {
+      switch (event.keyCode) {
+        case 111:
+          handleSelectOperator('/')
+          break
+        case 106:
+          handleSelectOperator('*')
+          break
+        case 109:
+          handleSelectOperator('-')
+          break
+        case 189:
+          handleSelectOperator('-')
+          break
+        case 107:
+          handleSelectOperator('+')
+          break
+        case 13:
+          handleClickEquals()
+          break
+        case 187:
+          handleClickEquals()
+          break
+      }
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener('keyup', handleKeyUp)
+
+    return () => window.removeEventListener('keyup', handleKeyUp)
+  })
 
   const handleClickDigit = event => {
     const digitText = event.target.innerText
 
-    setCurrentDisplay(digitText)
-
-    const digitAsNumber = parseInt(digitText)
-
-    if (leftOperand === undefined) {
-      setLeftOperand(digitAsNumber)
-    } else {
-      setRightOperand(digitAsNumber)
-    }
+    handleDigitSelected(digitText)
   }
 
-  const handleClickOperator = operator => {
+  const handleSelectOperator = operator => {
     setOperator(operator)
   }
 
@@ -29,19 +61,19 @@ export function Calculator() {
 
     switch (operator) {
       case '/':
-        answer = leftOperand / rightOperand
+        answer = firstOperand / secondOperand
         break
 
       case '*':
-        answer = leftOperand * rightOperand
+        answer = firstOperand * secondOperand
         break
 
       case '-':
-        answer = leftOperand - rightOperand
+        answer = firstOperand - secondOperand
         break
 
       case '+':
-        answer = leftOperand + rightOperand
+        answer = firstOperand + secondOperand
         break
     }
 
@@ -50,12 +82,11 @@ export function Calculator() {
 
   const handleClickClear = () => {
     setCurrentDisplay(0)
-    setLeftOperand(undefined)
-    setRightOperand(undefined)
+    setFirstOperand(undefined)
+    setSecondOperand(undefined)
     setOperator(undefined)
   }
 
-  console.log(handleClickDigit)
   return (
     <main>
       <div className="calculator">
@@ -67,7 +98,7 @@ export function Calculator() {
           <button className="button fn">&#177;</button>
           <button className="button fn">&#37;</button>
           <button
-            onClick={() => handleClickOperator('/')}
+            onClick={() => handleSelectOperator('/')}
             className="button op"
           >
             &#247;
@@ -82,12 +113,13 @@ export function Calculator() {
             9
           </button>
           <button
-            onClick={() => handleClickOperator('*')}
+            onClick={() => handleSelectOperator('*')}
             className="button op"
           >
             {' '}
             &#215;
           </button>
+
           <button onClick={handleClickDigit} className="button">
             4
           </button>
@@ -98,7 +130,7 @@ export function Calculator() {
             6
           </button>
           <button
-            onClick={() => handleClickOperator('-')}
+            onClick={() => handleSelectOperator('-')}
             className="button op"
           >
             {' '}
@@ -115,7 +147,7 @@ export function Calculator() {
             3
           </button>
           <button
-            onClick={() => handleClickOperator('+')}
+            onClick={() => handleSelectOperator('+')}
             className="button op"
           >
             &#43;
@@ -123,7 +155,9 @@ export function Calculator() {
           <button onClick={handleClickDigit} className="button x2">
             0
           </button>
-          <button className="button">.</button>
+          <button onClick={handleClickDigit} className="button">
+            .
+          </button>
           <button onClick={handleClickEquals} className="button op">
             &#61;
           </button>
@@ -131,6 +165,18 @@ export function Calculator() {
       </div>
     </main>
   )
+
+  function handleDigitSelected(digitText) {
+    setCurrentDisplay(digitText)
+
+    const digitAsNumber = parseInt(digitText)
+
+    if (firstOperand === undefined) {
+      setFirstOperand(digitAsNumber)
+    } else {
+      setSecondOperand(digitAsNumber)
+    }
+  }
 }
 
 export default Calculator
